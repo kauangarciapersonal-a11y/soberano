@@ -1112,6 +1112,42 @@ function instalar(){
   onSaveFn=closeModal;
 }
 
+/* ============================================================
+   AUTO-ATUALIZAÇÃO (verifica se saiu versão nova e atualiza)
+   ============================================================ */
+const APP_VERSION = "2026-11-23a";
+let avisoVersaoMostrado = false;
+async function checarVersao(){
+  try{
+    const r = await fetch('versao.json?t=' + Date.now(), { cache: 'no-store' });
+    if(!r.ok) return;
+    const j = await r.json();
+    if(j && j.versao && j.versao !== APP_VERSION){
+      const el = document.activeElement;
+      const editando = !!document.getElementById('modalRoot').innerHTML
+        || (el && ['INPUT','TEXTAREA','SELECT'].includes(el.tagName));
+      if(editando) bannerAtualizar();   // não interrompe quem está digitando
+      else location.reload();            // atualiza sozinho
+    }
+  }catch(e){ /* sem internet: tenta de novo depois */ }
+}
+function bannerAtualizar(){
+  if(avisoVersaoMostrado) return; avisoVersaoMostrado = true;
+  const b = document.createElement('div');
+  b.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top));z-index:300;background:linear-gradient(180deg,var(--green2),var(--green-d));color:#04130a;padding:10px 14px;border-radius:12px;font-weight:700;box-shadow:var(--shadow);display:flex;gap:10px;align-items:center;font-size:14px';
+  b.innerHTML = '🔄 Nova versão disponível';
+  const bt = document.createElement('button');
+  bt.textContent = 'Atualizar';
+  bt.style.cssText = 'background:#04130a;color:var(--green2);border:none;border-radius:8px;padding:6px 12px;font-weight:700';
+  bt.onclick = ()=>location.reload();
+  b.appendChild(bt);
+  document.body.appendChild(b);
+}
+// verifica ao abrir, a cada 3 minutos, e ao voltar pro app
+setTimeout(checarVersao, 8000);
+setInterval(checarVersao, 180000);
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'visible') checarVersao(); });
+
 /* ---------- start ---------- */
 // Service worker só quando publicado na web (http/https). No pendrive (file://) ele não roda — e não precisa.
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }

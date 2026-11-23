@@ -2,7 +2,7 @@
    Guarda o app (telas, estilos, logo) para abrir rápido e funcionar sem internet.
    Os DADOS ficam na nuvem (Supabase). O service worker só guarda o app em si.
    Ao publicar uma versão nova, troque o número do CACHE abaixo (v1 -> v2 ...). */
-const CACHE = "soberano-nuvem-v1";
+const CACHE = "soberano-nuvem-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -28,6 +28,8 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET" || !req.url.startsWith(self.location.origin)) return;
+  // versao.json: sempre direto da internet (nunca do cache), para o auto-atualizador funcionar.
+  if (req.url.includes("/versao.json")) return;
   // Para navegação (abrir o app): tenta a internet, se falhar usa o que está guardado.
   if (req.mode === "navigate") {
     e.respondWith(fetch(req).catch(() => caches.match("./index.html")));
