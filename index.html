@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#080b09" />
+<title>Soberano | Assistência Técnica</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Soberano" />
+<style>
+:root{
+  --bg:#080b09; --bg2:#0a0d0b; --card:#0f1512; --card2:#171d19; --card3:#222b24;
+  --border:rgba(53,216,117,.16); --border2:rgba(53,216,117,.30);
+  --green:#35d875; --green2:#57e890; --green-d:#07964c;
+  --orange:#ff9f1c; --orange2:#ffc067; --red:#ff5b5b; --blue:#58b2ff;
+  --text:#f2f6f2; --muted:#a7b3a9; --muted2:#84aa8c;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+  --radius:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:radial-gradient(1200px 600px at 80% -10%, rgba(7,150,76,.18), transparent 60%), var(--bg);
+  color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  min-height:100vh; min-height:100dvh;
+}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+a{color:var(--green)}
+.hidden{display:none !important}
+
+/* ====== LOGIN / SETUP ====== */
+.auth-wrap{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-card{width:100%;max-width:400px;background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid var(--border);border-radius:22px;padding:28px 24px;box-shadow:var(--shadow)}
+.auth-logo{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:22px}
+.auth-logo img{width:92px;height:92px;border-radius:20px;background:#0c120e;padding:6px;border:1px solid var(--border)}
+.auth-logo b{font-size:22px;letter-spacing:.5px}
+.auth-logo span{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+
+/* ====== APP SHELL ====== */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(8,11,9,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top))}
+.topbar-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand img{width:40px;height:40px;border-radius:11px;background:#0c120e;border:1px solid var(--border)}
+.brand .bt{line-height:1.05;min-width:0}
+.brand .bt b{font-size:15px;display:block;letter-spacing:.3px}
+.brand .bt span{font-size:9px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase}
+.topbar .spacer{flex:1}
+.icon-btn{background:var(--card2);border:1px solid var(--border);color:var(--text);
+  border-radius:11px;padding:9px 12px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.icon-btn.ghost{background:transparent}
+.icon-btn:active{transform:scale(.97)}
+
+.nav{position:sticky;top:60px;z-index:30;background:rgba(8,11,9,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border)}
+.nav-in{max-width:1100px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;padding:8px 10px;scrollbar-width:none}
+.nav-in::-webkit-scrollbar{display:none}
+.nav a{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border-radius:11px;
+  color:var(--muted);font-size:13.5px;font-weight:600;text-decoration:none;border:1px solid transparent;white-space:nowrap}
+.nav a .dot{width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center}
+.nav a.active{color:var(--green);background:rgba(53,216,117,.10);border-color:var(--border2)}
+.nav a .pill{background:var(--orange);color:#1a1205;border-radius:999px;font-size:11px;font-weight:800;padding:1px 7px}
+
+.main{max-width:1100px;margin:0 auto;padding:18px 14px 90px}
+.crumbs{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+h1.page{font-size:26px;margin:2px 0 4px}
+.page-sub{color:var(--muted);margin:0 0 18px;font-size:14px}
+
+/* ====== CARDS / GRID ====== */
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:760px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:460px){.g2.sm1,.g3,.g4{grid-template-columns:1fr}}
+.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px}
+.card.hero{background:linear-gradient(160deg,rgba(7,150,76,.25),rgba(15,21,18,.6));border-color:var(--border2)}
+.stat{display:flex;flex-direction:column;gap:4px}
+.stat .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.stat .val{font-size:24px;font-weight:800}
+.stat .val.green{color:var(--green)} .stat .val.orange{color:var(--orange)} .stat .val.red{color:var(--red)}
+.stat .sub{font-size:12px;color:var(--muted2)}
+
+.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.quick button{text-align:left;background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px;color:var(--text);display:flex;align-items:center;gap:12px}
+.quick button:active{transform:scale(.98)}
+.quick .ic{width:38px;height:38px;flex:0 0 auto;border-radius:11px;background:rgba(53,216,117,.14);
+  display:flex;align-items:center;justify-content:center;color:var(--green)}
+.quick .tx b{display:block;font-size:14.5px}
+.quick .tx span{font-size:12px;color:var(--muted)}
+
+/* ====== BUTTONS ====== */
+.btn{border:none;border-radius:12px;padding:12px 16px;font-size:14.5px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(180deg,var(--green2),var(--green-d));color:#04130a}
+.btn.ghost{background:var(--card3);color:var(--text);border:1px solid var(--border)}
+.btn.danger{background:rgba(255,91,91,.14);color:var(--red);border:1px solid rgba(255,91,91,.35)}
+.btn.wide{width:100%}
+.btn.sm{padding:8px 12px;font-size:13px;border-radius:10px}
+
+/* ====== TOOLBAR (busca + add) ====== */
+.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.search{flex:1;min-width:160px;display:flex;align-items:center;gap:8px;background:var(--card);
+  border:1px solid var(--border);border-radius:12px;padding:0 12px}
+.search input{flex:1;background:transparent;border:none;outline:none;color:var(--text);padding:12px 0;font-size:14px}
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;background:var(--card);border:1px solid var(--border);color:var(--muted);
+  border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600}
+.chip.active{background:rgba(53,216,117,.12);border-color:var(--border2);color:var(--green)}
+
+/* ====== LIST ITEMS ====== */
+.list{display:flex;flex-direction:column;gap:10px}
+.item{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--border);
+  border-radius:14px;padding:14px;display:flex;gap:12px;align-items:flex-start}
+.item .av{width:42px;height:42px;flex:0 0 auto;border-radius:11px;background:rgba(53,216,117,.12);
+  color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px}
+.item .bd{flex:1;min-width:0}
+.item .bd .t{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.item .bd .m{color:var(--muted);font-size:13px;margin-top:3px}
+.item .rt{text-align:right;white-space:nowrap}
+.item .rt .money{font-weight:800;color:var(--green)}
+.badge{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;letter-spacing:.3px;white-space:nowrap}
+.badge.green{background:rgba(53,216,117,.16);color:var(--green)}
+.badge.orange{background:rgba(255,159,28,.16);color:var(--orange)}
+.badge.blue{background:rgba(88,178,255,.16);color:var(--blue)}
+.badge.red{background:rgba(255,91,91,.16);color:var(--red)}
+.badge.gray{background:var(--card3);color:var(--muted)}
+.empty{text-align:center;color:var(--muted);padding:40px 16px}
+.empty .big{font-size:40px;margin-bottom:8px;opacity:.8}
+
+/* ====== MODAL ====== */
+.modal-bg{position:fixed;inset:0;background:rgba(2,4,3,.72);backdrop-filter:blur(3px);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center;padding:0}
+@media(min-width:620px){.modal-bg{align-items:center;padding:20px}}
+.modal{width:100%;max-width:560px;background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid var(--border2);border-top-left-radius:22px;border-top-right-radius:22px;border-radius:22px;
+  max-height:92dvh;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.modal-h{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.modal-h b{font-size:17px;flex:1}
+.modal-b{padding:16px 18px;overflow-y:auto}
+.modal-f{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:10px}
+.modal-f .btn{flex:1}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.field input,.field select,.field textarea{width:100%;background:var(--bg2);border:1px solid var(--border);
+  color:var(--text);border-radius:11px;padding:12px;font-size:15px;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--border2)}
+.field textarea{min-height:70px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:420px){.row2{grid-template-columns:1fr}}
+
+/* ====== TOAST ====== */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom));
+  background:var(--card3);border:1px solid var(--border2);color:var(--text);padding:12px 18px;border-radius:12px;
+  z-index:200;font-size:14px;font-weight:600;box-shadow:var(--shadow);max-width:90vw;text-align:center}
+.toast.ok{border-color:var(--border2)} .toast.err{border-color:rgba(255,91,91,.5);color:#ffd4d4}
+
+/* carrinho */
+.cart-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button{width:30px;height:30px;border-radius:9px;border:1px solid var(--border);background:var(--card3);color:var(--text);font-size:18px;font-weight:700}
+
+@media print{
+  body{background:#fff;color:#000}
+  .topbar,.nav,.main>*:not(#printArea){display:none !important}
+  #printArea{display:block !important}
+}
+</style>
+<script src="supabase.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<div id="modalRoot"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   SOBERANO — Assistência Técnica (app próprio, versão local)
+   Dados ficam no PRÓPRIO aparelho (localStorage). Sem servidor.
+   ============================================================ */
+
+/* ---------- Supabase (nuvem) ---------- */
+const SUPA_URL = "https://ckyjtdtpduyczucjmdmc.supabase.co";
+const SUPA_KEY = "sb_publishable_wc-zt3vcBsGZIxkcxUtXlw_ld1nIqdm";
+const supa = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+const CACHE = "soberano_cache_v1"; // cópia local, para abrir rápido e aguentar queda de internet
+const DB_DEFAULT = { config:{loja:"Soberano Assistência Técnica",dono:""}, clientes:[], aparelhos:[], ordens:[], produtos:[], vendas:[], caixa:[], seq:{os:0,venda:0} };
+let DB = cacheLoad();
+let ultimoStamp = null;   // marca da última gravação feita por ESTE aparelho (ignora o eco do tempo real)
+let canal = null;         // canal de sincronização em tempo real
+
+function cacheLoad(){ try{ return Object.assign(structuredClone(DB_DEFAULT), JSON.parse(localStorage.getItem(CACHE)||"{}")); }catch(e){ return structuredClone(DB_DEFAULT); } }
+function cacheSave(){ try{ localStorage.setItem(CACHE, JSON.stringify(DB)); }catch(e){} }
+function load(){ return DB; } // compatibilidade
+
+// Traz os dados da nuvem para a memória
+async function carregarNuvem(){
+  try{
+    const { data, error } = await supa.from('app_estado').select('dados').eq('id','loja').single();
+    if(error) throw error;
+    DB = Object.assign(structuredClone(DB_DEFAULT), (data && data.dados) || {});
+    if(!DB.config) DB.config = {loja:"Soberano Assistência Técnica",dono:""};
+    cacheSave(); return true;
+  }catch(e){ DB = cacheLoad(); return false; }
+}
+
+// Salva na nuvem (e guarda cópia local). Chamado após cada mudança.
+async function save(){
+  cacheSave();
+  const stamp = new Date().toISOString(); ultimoStamp = stamp;
+  try{
+    const { error } = await supa.from('app_estado').upsert({ id:'loja', dados:DB, atualizado_em:stamp });
+    if(error) throw error;
+  }catch(e){ toast('Sem internet — salvo no aparelho, sincroniza depois.','err'); }
+}
+
+// Sincronização em tempo real: se outro aparelho alterar, atualiza aqui
+function assinarTempoReal(){
+  if(canal) return;
+  canal = supa.channel('estado-loja')
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'app_estado', filter:'id=eq.loja' }, (payload)=>{
+      const novo = payload.new || {};
+      if(novo.atualizado_em && novo.atualizado_em === ultimoStamp) return; // foi este aparelho
+      if(document.getElementById('modalRoot').innerHTML) return;           // não atrapalha quem está editando
+      DB = Object.assign(structuredClone(DB_DEFAULT), novo.dados || {});
+      if(!DB.config) DB.config = {loja:"Soberano Assistência Técnica",dono:""};
+      cacheSave(); render();
+    })
+    .subscribe();
+}
+
+/* ---------- Utilidades ---------- */
+const $ = (s,el=document)=>el.querySelector(s);
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function today(){ return new Date().toLocaleDateString('sv'); }
+function money(n){ return (Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+function fmtDate(iso){ if(!iso) return "—"; const [y,m,d]=iso.slice(0,10).split('-'); return `${d}/${m}/${y}`; }
+function digits(s){ return String(s||"").replace(/\D/g,''); }
+function initials(nome){ const p=String(nome||"?").trim().split(/\s+/); return ((p[0]||"?")[0]+(p[1]?p[1][0]:"")).toUpperCase(); }
+function byId(arr,id){ return arr.find(x=>x.id===id); }
+
+function toast(msg,type="ok"){
+  const t=document.createElement('div'); t.className="toast "+type; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>{t.style.opacity="0";t.style.transition="opacity .3s";},1800);
+  setTimeout(()=>t.remove(),2200);
+}
+
+/* ---------- Período ---------- */
+function inPeriod(iso, period){
+  if(!iso) return false;
+  const d=iso.slice(0,10); const now=new Date(); const t=new Date(d+"T12:00:00");
+  const ymd=s=>s.toLocaleDateString('sv');
+  if(period==="tudo") return true;
+  if(period==="hoje") return d===today();
+  if(period==="semana"){ const w=new Date(now); w.setDate(now.getDate()-6); return d>=ymd(w)&&d<=today(); }
+  if(period==="mes") return d.slice(0,7)===today().slice(0,7);
+  if(period==="mespassado"){ const p=new Date(now.getFullYear(),now.getMonth()-1,1); return d.slice(0,7)===ymd(p).slice(0,7); }
+  if(period==="ano") return d.slice(0,4)===today().slice(0,4);
+  return true;
+}
+const PERIODOS=[["hoje","Hoje"],["semana","Esta semana"],["mes","Este mês"],["mespassado","Mês passado"],["ano","Este ano"],["tudo","Tudo"]];
+
+/* ---------- Status de OS ---------- */
+const STATUS={
+  em_analise:{label:"Em análise",cor:"orange"},
+  aguardando_pecas:{label:"Aguardando peças",cor:"orange"},
+  em_manutencao:{label:"Em manutenção",cor:"blue"},
+  em_testes:{label:"Em testes",cor:"blue"},
+  concluida:{label:"Concluída",cor:"green"},
+  entregue:{label:"Entregue ao cliente",cor:"green"},
+  cancelada:{label:"Cancelada",cor:"red"},
+};
+const STATUS_ABERTOS=["em_analise","aguardando_pecas","em_manutencao","em_testes","concluida"];
+const osAberta = o => o.status!=="entregue" && o.status!=="cancelada";
+const osFaturavel = o => o.status==="concluida" || o.status==="entregue";
+const osTotal = o => (Number(o.servico)||0) + (o.pecas||[]).reduce((s,p)=>s+(Number(p.valor)||0),0);
+const PAGAMENTOS=["Dinheiro","Pix","Cartão de débito","Cartão de crédito"];
+
+/* ---------- Ícones (SVG inline) ---------- */
+const IC={
+  grid:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+  wrench:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 00-5.4 5.2L4 17l3 3 5.5-5.3a4 4 0 005.2-5.4l-2.5 2.5-2.1-.6-.6-2.1 2.5-2.5z"/></svg>',
+  user:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
+  phone:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="3"/><line x1="11" y1="18" x2="13" y2="18"/></svg>',
+  box:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>',
+  cart:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.5 13h11L21 7H6"/></svg>',
+  money:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>',
+  cog:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>',
+  plus:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  search:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>',
+  out:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>',
+};
+
+/* ============================================================
+   RENDER PRINCIPAL
+   ============================================================ */
+const ROUTES=[
+  {id:"painel",label:"Visão geral",ic:IC.grid},
+  {id:"ordens",label:"Ordens de serviço",ic:IC.wrench},
+  {id:"clientes",label:"Clientes",ic:IC.user},
+  {id:"aparelhos",label:"Aparelhos",ic:IC.phone},
+  {id:"estoque",label:"Estoque",ic:IC.box},
+  {id:"vendas",label:"Vendas",ic:IC.cart},
+  {id:"financeiro",label:"Financeiro",ic:IC.money},
+  {id:"conta",label:"Conta",ic:IC.cog},
+];
+let current="painel";
+let deferredInstall=null;
+
+function app(){ return mainShell(); }
+
+function render(){ document.getElementById('root').innerHTML = app(); bind(); }
+
+/* ---------- Topbar + Nav ---------- */
+function mainShell(){
+  const abertas = DB.ordens.filter(osAberta).length;
+  const nav = ROUTES.map(r=>`<a href="#" data-route="${r.id}" class="${r.id===current?'active':''}">
+      <span class="dot">${r.ic}</span>${esc(r.label)}
+      ${r.id==='ordens'&&abertas?`<span class="pill">${abertas}</span>`:''}</a>`).join('');
+  return `
+  <div class="topbar"><div class="topbar-in">
+    <div class="brand"><img src="icon-192.png" alt="Soberano"/><div class="bt"><b>SOBERANO</b><span>Assistência Técnica</span></div></div>
+    <div class="spacer"></div>
+    <button class="icon-btn ghost" id="btnInstall" style="display:none">⬇ Instalar</button>
+    <button class="icon-btn ghost" data-route="conta">${IC.cog}</button>
+  </div></div>
+  <div class="nav"><div class="nav-in">${nav}</div></div>
+  <div class="main" id="view">${view()}</div>`;
+}
+
+function view(){
+  switch(current){
+    case "painel": return vPainel();
+    case "ordens": return vOrdens();
+    case "clientes": return vClientes();
+    case "aparelhos": return vAparelhos();
+    case "estoque": return vEstoque();
+    case "vendas": return vVendas();
+    case "financeiro": return vFinanceiro();
+    case "conta": return vConta();
+  }
+  return "";
+}
+function go(route){ current=route; const v=$("#view"); if(v){ v.innerHTML=view(); bindView(); window.scrollTo(0,0);
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.route===route));
+  } else render(); }
+
+/* ============================================================
+   TELA: PAINEL (Visão geral)
+   ============================================================ */
+let painelPeriodo="mes";
+function faturamento(period){
+  const assist = DB.ordens.filter(o=>osFaturavel(o)&&inPeriod(o.finalizadaEm||o.abertaEm,period)).reduce((s,o)=>s+osTotal(o),0);
+  const vendas = DB.vendas.filter(v=>inPeriod(v.data,period)).reduce((s,v)=>s+v.total,0);
+  const lucroVendas = DB.vendas.filter(v=>inPeriod(v.data,period)).reduce((s,v)=>s+(v.lucro||0),0);
+  const despesas = DB.caixa.filter(c=>c.tipo==="despesa"&&inPeriod(c.data,period)).reduce((s,c)=>s+c.valor,0);
+  const entradasExtra = DB.caixa.filter(c=>c.tipo==="entrada"&&inPeriod(c.data,period)).reduce((s,c)=>s+c.valor,0);
+  const lucro = assist + lucroVendas + entradasExtra - despesas;
+  return {assist,vendas,despesas,entradasExtra,lucro,total:assist+vendas+entradasExtra};
+}
+function vPainel(){
+  const nome = DB.config.dono || "chefe";
+  const abertas = DB.ordens.filter(osAberta).length;
+  const criticos = DB.produtos.filter(p=>p.qtd<=p.minimo).length;
+  const f = faturamento(painelPeriodo);
+  const perLabel = (PERIODOS.find(p=>p[0]===painelPeriodo)||[])[1];
+  return `
+  <div class="crumbs">Soberano / Visão geral</div>
+  <h1 class="page">Visão geral</h1>
+  <p class="page-sub">Tudo o que acontece na sua assistência, em um só lugar.</p>
+
+  <button class="btn primary wide" data-act="nova-venda" style="margin-bottom:14px">${IC.plus} Nova venda</button>
+
+  <div class="card hero" style="margin-bottom:14px">
+    <div style="font-size:11px;letter-spacing:2px;color:var(--green);text-transform:uppercase;font-weight:700">Seu dia, sob controle</div>
+    <div style="font-size:24px;font-weight:800;margin:4px 0 2px">Olá, ${esc(nome)} ✦</div>
+    <div style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Veja o que precisa da sua atenção e continue de onde parou.</div>
+    <div class="quick">
+      <button data-act="nova-ordem"><span class="ic">${IC.wrench}</span><span class="tx"><b>Nova ordem</b><span>Receber aparelho</span></span></button>
+      <button data-route="clientes" data-new="1"><span class="ic">${IC.user}</span><span class="tx"><b>Novo cliente</b><span>Cadastrar contato</span></span></button>
+      <button data-route="estoque"><span class="ic">${IC.box}</span><span class="tx"><b>Ver estoque</b><span>Conferir produtos</span></span></button>
+      <button data-route="financeiro"><span class="ic">${IC.money}</span><span class="tx"><b>Financeiro</b><span>Caixa e lucro</span></span></button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <b style="font-size:15px">Consultar período</b>
+    </div>
+    <div class="filters" style="margin-bottom:12px">
+      ${PERIODOS.map(p=>`<button class="chip ${p[0]===painelPeriodo?'active':''}" data-per="${p[0]}">${p[1]}</button>`).join('')}
+    </div>
+    <div class="grid g3">
+      <div class="card" style="background:var(--card)"><div class="stat"><span class="lbl">Faturamento (${esc(perLabel)})</span><span class="val green">${money(f.total)}</span><span class="sub">Assistência + vendas</span></div></div>
+      <div class="card" style="background:var(--card)"><div class="stat"><span class="lbl">Lucro estimado</span><span class="val ${f.lucro>=0?'green':'red'}">${money(f.lucro)}</span><span class="sub">Já descontando despesas</span></div></div>
+      <div class="card" style="background:var(--card)"><div class="stat"><span class="lbl">Despesas</span><span class="val orange">${money(f.despesas)}</span><span class="sub">No período</span></div></div>
+    </div>
+  </div>
+
+  <div class="grid g2 sm1">
+    <div class="card"><div class="stat"><span class="lbl">Ordens em aberto</span><span class="val ${abertas?'orange':'green'}">${abertas}</span>
+      <span class="sub">${abertas?'Aparelhos em andamento':'Nenhuma pendente 👍'}</span></div>
+      <button class="btn ghost sm wide" data-route="ordens" style="margin-top:12px">Ver ordens</button></div>
+    <div class="card"><div class="stat"><span class="lbl">Estoque crítico</span><span class="val ${criticos?'red':'green'}">${criticos}</span>
+      <span class="sub">${criticos?'Itens no mínimo ou abaixo':'Tudo abastecido 👍'}</span></div>
+      <button class="btn ghost sm wide" data-route="estoque" style="margin-top:12px">Ver estoque</button></div>
+  </div>`;
+}
+
+/* ============================================================
+   TELA: ORDENS DE SERVIÇO
+   ============================================================ */
+let ordensFiltro="todas", ordensBusca="";
+function vOrdens(){
+  const chips=[["todas","Todas"],["abertas","Em aberto"],...Object.keys(STATUS).map(k=>[k,STATUS[k].label])];
+  let lista=[...DB.ordens].sort((a,b)=>(b.numero||0)-(a.numero||0));
+  if(ordensFiltro==="abertas") lista=lista.filter(osAberta);
+  else if(ordensFiltro!=="todas") lista=lista.filter(o=>o.status===ordensFiltro);
+  const q=ordensBusca.toLowerCase();
+  if(q) lista=lista.filter(o=>{const c=byId(DB.clientes,o.clienteId);return (c&&c.nome.toLowerCase().includes(q))||(o.aparelho||"").toLowerCase().includes(q)||String(o.numero).includes(q)||(o.imei||"").includes(q);});
+  return `
+  <div class="crumbs">Soberano / Ordens de serviço</div>
+  <h1 class="page">Ordens de serviço</h1>
+  <p class="page-sub">Receba o aparelho, acompanhe o conserto e avise o cliente.</p>
+  <div class="toolbar">
+    <div class="search">${IC.search}<input id="buscaOrdem" placeholder="Buscar por cliente, aparelho, nº..." value="${esc(ordensBusca)}"></div>
+    <button class="btn primary" data-act="nova-ordem">${IC.plus} Abrir ordem</button>
+  </div>
+  <div class="filters">${chips.map(c=>`<button class="chip ${c[0]===ordensFiltro?'active':''}" data-of="${c[0]}">${esc(c[1])}</button>`).join('')}</div>
+  <div class="list">
+    ${lista.length?lista.map(cardOrdem).join(''):emptyBox("🧰","Nenhuma ordem por aqui",'Toque em "Abrir ordem" para receber um aparelho.')}
+  </div>`;
+}
+function cardOrdem(o){
+  const c=byId(DB.clientes,o.clienteId); const st=STATUS[o.status]||{label:o.status,cor:"gray"};
+  return `<div class="item" data-open-os="${o.id}">
+    <div class="av">${IC.wrench}</div>
+    <div class="bd">
+      <div class="t">OS #${String(o.numero).padStart(4,'0')} <span class="badge ${st.cor}">${esc(st.label)}</span></div>
+      <div class="m">${esc(o.aparelho||"Aparelho")}${o.imei?` · IMEI ${esc(o.imei)}`:''}</div>
+      <div class="m">${c?esc(c.nome):'Sem cliente'} · aberta em ${fmtDate(o.abertaEm)}</div>
+    </div>
+    <div class="rt"><div class="money">${money(osTotal(o))}</div></div>
+  </div>`;
+}
+
+/* ============================================================
+   TELA: CLIENTES
+   ============================================================ */
+let clientesBusca="";
+function vClientes(){
+  const q=clientesBusca.toLowerCase();
+  let lista=[...DB.clientes].sort((a,b)=>a.nome.localeCompare(b.nome));
+  if(q) lista=lista.filter(c=>c.nome.toLowerCase().includes(q)||digits(c.cpf).includes(digits(q))||digits(c.telefone).includes(digits(q)));
+  return `
+  <div class="crumbs">Soberano / Clientes</div>
+  <h1 class="page">Clientes</h1>
+  <p class="page-sub">${DB.clientes.length} ${DB.clientes.length===1?'cliente cadastrado':'clientes cadastrados'}.</p>
+  <div class="toolbar">
+    <div class="search">${IC.search}<input id="buscaCliente" placeholder="Digite o nome ou CPF do cliente" value="${esc(clientesBusca)}"></div>
+    <button class="btn primary" data-act="novo-cliente">${IC.plus} Cadastrar</button>
+  </div>
+  <div class="list">
+    ${lista.length?lista.map(cardCliente).join(''):emptyBox("👤","Nenhum cliente","Cadastre o primeiro contato da loja.")}
+  </div>`;
+}
+function cardCliente(c){
+  const nOS=DB.ordens.filter(o=>o.clienteId===c.id).length;
+  return `<div class="item" data-open-cliente="${c.id}">
+    <div class="av">${initials(c.nome)}</div>
+    <div class="bd"><div class="t">${esc(c.nome)}</div>
+      <div class="m">${c.telefone?esc(c.telefone):'sem telefone'}${c.cidade?` · ${esc(c.cidade)}${c.estado?'/'+esc(c.estado):''}`:''}</div>
+      <div class="m">${c.cpf?'CPF '+esc(c.cpf):''}${nOS?` · ${nOS} OS`:''}</div>
+    </div>
+    <div class="rt"><button class="btn ghost sm" data-zap="${c.id}">WhatsApp</button></div>
+  </div>`;
+}
+
+/* ============================================================
+   TELA: APARELHOS
+   ============================================================ */
+let aparelhosBusca="";
+function vAparelhos(){
+  const q=aparelhosBusca.toLowerCase();
+  let lista=[...DB.aparelhos].sort((a,b)=>(b.criadoEm||"").localeCompare(a.criadoEm||""));
+  if(q) lista=lista.filter(a=>`${a.marca} ${a.modelo} ${a.imei}`.toLowerCase().includes(q));
+  return `
+  <div class="crumbs">Soberano / Aparelhos</div>
+  <h1 class="page">Aparelhos</h1>
+  <p class="page-sub">Cadastro de aparelhos dos clientes (marca, modelo e IMEI).</p>
+  <div class="toolbar">
+    <div class="search">${IC.search}<input id="buscaAparelho" placeholder="Buscar aparelho ou IMEI" value="${esc(aparelhosBusca)}"></div>
+    <button class="btn primary" data-act="novo-aparelho">${IC.plus} Cadastrar</button>
+  </div>
+  <div class="list">
+    ${lista.length?lista.map(cardAparelho).join(''):emptyBox("📱","Nenhum aparelho","Cadastre o aparelho de um cliente.")}
+  </div>`;
+}
+function cardAparelho(a){
+  const c=byId(DB.clientes,a.clienteId);
+  return `<div class="item" data-open-aparelho="${a.id}">
+    <div class="av">${IC.phone}</div>
+    <div class="bd"><div class="t">${esc(a.marca||'')} ${esc(a.modelo||'')}</div>
+      <div class="m">${a.imei?'IMEI '+esc(a.imei):'sem IMEI'}${a.cor?` · ${esc(a.cor)}`:''}</div>
+      <div class="m">${c?esc(c.nome):'sem dono'}</div>
+    </div></div>`;
+}
+
+/* ============================================================
+   TELA: ESTOQUE
+   ============================================================ */
+let estoqueBusca="", estoqueFiltro="todos";
+function vEstoque(){
+  const q=estoqueBusca.toLowerCase();
+  let lista=[...DB.produtos].sort((a,b)=>a.nome.localeCompare(b.nome));
+  if(estoqueFiltro==="criticos") lista=lista.filter(p=>p.qtd<=p.minimo);
+  if(q) lista=lista.filter(p=>`${p.nome} ${p.categoria} ${p.fornecedor}`.toLowerCase().includes(q));
+  const criticos=DB.produtos.filter(p=>p.qtd<=p.minimo).length;
+  const valorEstoque=DB.produtos.reduce((s,p)=>s+p.qtd*(Number(p.custo)||0),0);
+  return `
+  <div class="crumbs">Soberano / Estoque</div>
+  <h1 class="page">Estoque</h1>
+  <p class="page-sub">${DB.produtos.length} produtos · valor em custo ${money(valorEstoque)}.</p>
+  ${criticos?`<div class="card" style="border-color:rgba(255,91,91,.4);background:rgba(255,91,91,.07);margin-bottom:14px;display:flex;align-items:center;gap:10px">
+     <span style="font-size:22px">⚠️</span><div><b>${criticos} ${criticos===1?'item':'itens'} no mínimo ou abaixo.</b><div class="m" style="color:var(--muted);font-size:13px">Toque em "Estoque crítico" para ver.</div></div></div>`:''}
+  <div class="toolbar">
+    <div class="search">${IC.search}<input id="buscaEstoque" placeholder="Buscar no estoque" value="${esc(estoqueBusca)}"></div>
+    <button class="btn primary" data-act="novo-produto">${IC.plus} Adicionar</button>
+  </div>
+  <div class="filters">
+    <button class="chip ${estoqueFiltro==='todos'?'active':''}" data-ef="todos">Todos</button>
+    <button class="chip ${estoqueFiltro==='criticos'?'active':''}" data-ef="criticos">Estoque crítico</button>
+  </div>
+  <div class="list">
+    ${lista.length?lista.map(cardProduto).join(''):emptyBox("📦","Estoque vazio","Adicione peças e produtos para vender.")}
+  </div>`;
+}
+function cardProduto(p){
+  const critico=p.qtd<=p.minimo;
+  return `<div class="item" data-open-produto="${p.id}">
+    <div class="av">${IC.box}</div>
+    <div class="bd"><div class="t">${esc(p.nome)} ${critico?`<span class="badge red">baixo</span>`:''}</div>
+      <div class="m">${p.categoria?esc(p.categoria):'sem categoria'}${p.fornecedor?` · ${esc(p.fornecedor)}`:''}</div>
+      <div class="m">Venda ${money(p.venda)} · custo ${money(p.custo)}</div>
+    </div>
+    <div class="rt"><div style="font-weight:800;font-size:18px;color:${critico?'var(--red)':'var(--green)'}">${p.qtd}</div><div class="m" style="font-size:11px">mín ${p.minimo}</div></div>
+  </div>`;
+}
+
+/* ============================================================
+   TELA: VENDAS
+   ============================================================ */
+let vendasBusca="";
+function vVendas(){
+  let lista=[...DB.vendas].sort((a,b)=>(b.criadoEm||"").localeCompare(a.criadoEm||""));
+  const q=vendasBusca.toLowerCase();
+  if(q) lista=lista.filter(v=>(v.itens||[]).some(i=>i.nome.toLowerCase().includes(q))||(v.forma||"").toLowerCase().includes(q));
+  return `
+  <div class="crumbs">Soberano / Vendas</div>
+  <h1 class="page">Vendas</h1>
+  <p class="page-sub">Monte o carrinho e registre a venda de produtos.</p>
+  <div class="toolbar">
+    <div class="search">${IC.search}<input id="buscaVenda" placeholder="Buscar venda" value="${esc(vendasBusca)}"></div>
+    <button class="btn primary" data-act="nova-venda">${IC.plus} Nova venda</button>
+  </div>
+  <div class="list">
+    ${lista.length?lista.map(cardVenda).join(''):emptyBox("🛒","Nenhuma venda registrada",'Toque em "Nova venda" para montar o carrinho.')}
+  </div>`;
+}
+function cardVenda(v){
+  const nItens=(v.itens||[]).reduce((s,i)=>s+i.qtd,0);
+  return `<div class="item">
+    <div class="av">${IC.cart}</div>
+    <div class="bd"><div class="t">Venda · ${nItens} ${nItens===1?'item':'itens'} <span class="badge gray">${esc(v.forma||'')}</span></div>
+      <div class="m">${esc((v.itens||[]).map(i=>i.qtd+'x '+i.nome).join(', ')).slice(0,80)}</div>
+      <div class="m">${fmtDate(v.data)}</div>
+    </div>
+    <div class="rt"><div class="money">${money(v.total)}</div></div>
+  </div>`;
+}
+
+/* ============================================================
+   TELA: FINANCEIRO (caixa)
+   ============================================================ */
+let finPeriodo="mes";
+function vFinanceiro(){
+  const f=faturamento(finPeriodo);
+  let mov=[...DB.caixa].sort((a,b)=>(b.criadoEm||"").localeCompare(a.criadoEm||"")).filter(c=>inPeriod(c.data,finPeriodo));
+  return `
+  <div class="crumbs">Soberano / Financeiro</div>
+  <h1 class="page">Financeiro</h1>
+  <p class="page-sub">Faturamento, despesas e caixa da loja.</p>
+  <div class="filters">${PERIODOS.map(p=>`<button class="chip ${p[0]===finPeriodo?'active':''}" data-fp="${p[0]}">${p[1]}</button>`).join('')}</div>
+  <div class="grid g2 sm1" style="margin-bottom:14px">
+    <div class="card"><div class="stat"><span class="lbl">Faturamento assistência</span><span class="val green">${money(f.assist)}</span></div></div>
+    <div class="card"><div class="stat"><span class="lbl">Faturamento vendas</span><span class="val green">${money(f.vendas)}</span></div></div>
+    <div class="card"><div class="stat"><span class="lbl">Despesas</span><span class="val orange">${money(f.despesas)}</span></div></div>
+    <div class="card"><div class="stat"><span class="lbl">Lucro líquido estimado</span><span class="val ${f.lucro>=0?'green':'red'}">${money(f.lucro)}</span></div></div>
+  </div>
+  <div class="toolbar">
+    <button class="btn ghost" data-act="mov" data-tipo="entrada">${IC.plus} Entrada</button>
+    <button class="btn ghost" data-act="mov" data-tipo="despesa">${IC.plus} Despesa</button>
+  </div>
+  <b style="font-size:15px">Movimentações do caixa</b>
+  <div class="list" style="margin-top:12px">
+    ${mov.length?mov.map(cardMov).join(''):emptyBox("💵","Sem movimentações","Lance entradas e despesas manuais aqui.")}
+  </div>`;
+}
+function cardMov(m){
+  const ent=m.tipo==="entrada";
+  return `<div class="item" data-open-mov="${m.id}">
+    <div class="av" style="background:${ent?'rgba(53,216,117,.12)':'rgba(255,91,91,.12)'};color:${ent?'var(--green)':'var(--red)'}">${ent?'+':'−'}</div>
+    <div class="bd"><div class="t">${esc(m.descricao||(ent?'Entrada':'Despesa'))}</div>
+      <div class="m">${esc(m.categoria||'')}${m.categoria?' · ':''}${fmtDate(m.data)}</div></div>
+    <div class="rt"><div class="money" style="color:${ent?'var(--green)':'var(--red)'}">${ent?'+':'−'} ${money(m.valor)}</div></div>
+  </div>`;
+}
+
+/* ============================================================
+   TELA: CONTA
+   ============================================================ */
+function vConta(){
+  const c=DB.config;
+  return `
+  <div class="crumbs">Soberano / Conta</div>
+  <h1 class="page">Minha conta</h1>
+  <p class="page-sub">Dados da loja e ajustes do aplicativo.</p>
+  <div class="card" style="margin-bottom:14px">
+    <div class="stat" style="margin-bottom:12px"><span class="lbl">Loja</span><span class="val" style="font-size:20px">${esc(c.loja||'Soberano')}</span><span class="sub">Responsável: ${esc(c.dono||'—')}</span></div>
+    <button class="btn ghost wide" data-act="editar-loja">Editar dados da loja</button>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <b style="font-size:15px">Segurança</b>
+    <div class="m" style="color:var(--muted);font-size:13px;margin:6px 0 12px">Senha de acesso ao sistema (vale no PC e no celular).</div>
+    <button class="btn ghost wide" data-act="alterar-senha">Alterar senha</button>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <b style="font-size:15px">Nuvem e backup</b>
+    <div class="m" style="color:var(--muted);font-size:13px;margin:6px 0 12px">
+      ${DB.clientes.length} clientes · ${DB.ordens.length} ordens · ${DB.produtos.length} produtos · ${DB.vendas.length} vendas.<br>
+      <b style="color:var(--green)">Salvando na nuvem ✓</b> — os dados aparecem no PC e no celular.
+    </div>
+    <div class="grid g2 sm1">
+      <button class="btn ghost" data-act="sincronizar">🔄 Atualizar agora</button>
+      <button class="btn ghost" data-act="backup">⬇ Baixar backup</button>
+    </div>
+    <button class="btn ghost wide" data-act="exemplo" style="margin-top:10px">Carregar dados de exemplo</button>
+    <button class="btn danger wide" data-act="zerar" style="margin-top:10px">Apagar todos os dados</button>
+  </div>
+  <button class="btn ghost wide" data-act="sair">${IC.out} Sair do app</button>
+  <p style="text-align:center;color:var(--muted2);font-size:12px;margin-top:20px">Soberano · Assistência Técnica</p>`;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+function emptyBox(ic,t,s){ return `<div class="empty"><div class="big">${ic}</div><b>${esc(t)}</b><div style="margin-top:4px;font-size:13px">${esc(s)}</div></div>`; }
+
+/* ============================================================
+   MODAIS / FORMULÁRIOS
+   ============================================================ */
+let onSaveFn=null;
+function modal(title, body, saveLabel="Salvar"){
+  document.getElementById('modalRoot').innerHTML=`
+   <div class="modal-bg" id="mbg"><div class="modal">
+     <div class="modal-h"><b>${esc(title)}</b><button class="icon-btn ghost" id="mClose">✕</button></div>
+     <div class="modal-b">${body}</div>
+     <div class="modal-f"><button class="btn ghost" id="mCancel">Cancelar</button><button class="btn primary" id="mSave">${esc(saveLabel)}</button></div>
+   </div></div>`;
+  $("#mClose").onclick=$("#mCancel").onclick=closeModal;
+  $("#mbg").onclick=e=>{ if(e.target.id==="mbg") closeModal(); };
+  $("#mSave").onclick=()=>{ if(onSaveFn) onSaveFn(); };
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML=""; onSaveFn=null; }
+function val(id){ const e=document.getElementById(id); return e?e.value.trim():""; }
+
+/* --- Cliente --- */
+function formCliente(cli){
+  cli=cli||{};
+  modal(cli.id?"Editar cliente":"Cadastrar contato",`
+    <div class="field"><label>Nome completo *</label><input id="f_nome" value="${esc(cli.nome||'')}" placeholder="Ex.: João da Silva"></div>
+    <div class="row2">
+      <div class="field"><label>Telefone / WhatsApp</label><input id="f_tel" value="${esc(cli.telefone||'')}" placeholder="(11) 90000-0000" inputmode="tel"></div>
+      <div class="field"><label>CPF</label><input id="f_cpf" value="${esc(cli.cpf||'')}" placeholder="000.000.000-00" inputmode="numeric"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Cidade</label><input id="f_cid" value="${esc(cli.cidade||'')}"></div>
+      <div class="field"><label>Estado</label><input id="f_uf" value="${esc(cli.estado||'')}" maxlength="2" placeholder="SP"></div>
+    </div>`);
+  onSaveFn=()=>{
+    const nome=val("f_nome"); if(!nome) return toast("Informe o nome.","err");
+    if(cli.id){ Object.assign(byId(DB.clientes,cli.id),{nome,telefone:val("f_tel"),cpf:val("f_cpf"),cidade:val("f_cid"),estado:val("f_uf").toUpperCase()}); }
+    else { DB.clientes.push({id:uid(),nome,telefone:val("f_tel"),cpf:val("f_cpf"),cidade:val("f_cid"),estado:val("f_uf").toUpperCase(),criadoEm:today()}); }
+    save(); closeModal(); toast("Cliente salvo ✓"); go(current);
+  };
+}
+
+/* --- Aparelho --- */
+function formAparelho(ap){
+  ap=ap||{};
+  const opts=DB.clientes.map(c=>`<option value="${c.id}" ${ap.clienteId===c.id?'selected':''}>${esc(c.nome)}</option>`).join('');
+  modal(ap.id?"Editar aparelho":"Cadastrar aparelho",`
+    <div class="field"><label>Dono (cliente)</label><select id="f_dono"><option value="">— selecione —</option>${opts}</select></div>
+    <div class="row2">
+      <div class="field"><label>Marca</label><input id="f_marca" value="${esc(ap.marca||'')}" placeholder="Samsung, Apple..."></div>
+      <div class="field"><label>Modelo</label><input id="f_modelo" value="${esc(ap.modelo||'')}" placeholder="A15, iPhone 11..."></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>IMEI</label><input id="f_imei" value="${esc(ap.imei||'')}" inputmode="numeric"></div>
+      <div class="field"><label>Cor</label><input id="f_cor" value="${esc(ap.cor||'')}"></div>
+    </div>`);
+  onSaveFn=()=>{
+    const marca=val("f_marca"),modelo=val("f_modelo"); if(!marca&&!modelo) return toast("Informe marca ou modelo.","err");
+    const data={clienteId:val("f_dono"),marca,modelo,imei:val("f_imei"),cor:val("f_cor")};
+    if(ap.id) Object.assign(byId(DB.aparelhos,ap.id),data);
+    else DB.aparelhos.push({id:uid(),...data,criadoEm:today()});
+    save(); closeModal(); toast("Aparelho salvo ✓"); go(current);
+  };
+}
+
+/* --- Produto --- */
+function formProduto(p){
+  p=p||{};
+  modal(p.id?"Editar produto":"Adicionar produto",`
+    <div class="field"><label>Nome do produto *</label><input id="f_pnome" value="${esc(p.nome||'')}" placeholder="Película, cabo, bateria..."></div>
+    <div class="row2">
+      <div class="field"><label>Categoria</label><input id="f_pcat" value="${esc(p.categoria||'')}" placeholder="Acessório, peça..."></div>
+      <div class="field"><label>Fornecedor</label><input id="f_pforn" value="${esc(p.fornecedor||'')}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Preço de custo (R$)</label><input id="f_pcusto" value="${p.custo||''}" inputmode="decimal" placeholder="0,00"></div>
+      <div class="field"><label>Preço de venda (R$)</label><input id="f_pvenda" value="${p.venda||''}" inputmode="decimal" placeholder="0,00"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Quantidade</label><input id="f_pqtd" value="${p.qtd!=null?p.qtd:''}" inputmode="numeric" placeholder="0"></div>
+      <div class="field"><label>Avisar quando chegar a</label><input id="f_pmin" value="${p.minimo!=null?p.minimo:''}" inputmode="numeric" placeholder="2"></div>
+    </div>`);
+  onSaveFn=()=>{
+    const nome=val("f_pnome"); if(!nome) return toast("Informe o nome.","err");
+    const data={nome,categoria:val("f_pcat"),fornecedor:val("f_pforn"),
+      custo:num(val("f_pcusto")),venda:num(val("f_pvenda")),qtd:parseInt(val("f_pqtd"))||0,minimo:parseInt(val("f_pmin"))||0};
+    if(p.id) Object.assign(byId(DB.produtos,p.id),data);
+    else DB.produtos.push({id:uid(),...data,criadoEm:today()});
+    save(); closeModal(); toast("Produto salvo ✓"); go(current);
+  };
+}
+function num(s){ return parseFloat(String(s).replace(/\./g,'').replace(',','.'))||0; }
+
+/* --- Ordem de serviço --- */
+function formOrdem(){
+  const opts=DB.clientes.map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+  modal("Abrir ordem de serviço",`
+    <div class="field"><label>Cliente</label><select id="f_ocli"><option value="">— selecione (ou cadastre antes) —</option>${opts}</select></div>
+    <div class="row2">
+      <div class="field"><label>Aparelho *</label><input id="f_oap" placeholder="Samsung A15, iPhone 11..."></div>
+      <div class="field"><label>IMEI</label><input id="f_oimei" inputmode="numeric"></div>
+    </div>
+    <div class="field"><label>Defeito relatado *</label><textarea id="f_odef" placeholder="Ex.: tela quebrada, não carrega..."></textarea></div>
+    <div class="row2">
+      <div class="field"><label>Valor do serviço (R$)</label><input id="f_oserv" inputmode="decimal" placeholder="0,00"></div>
+      <div class="field"><label>Senha/padrão do aparelho</label><input id="f_osenha" placeholder="opcional"></div>
+    </div>`,"Abrir ordem");
+  onSaveFn=()=>{
+    const aparelho=val("f_oap"),defeito=val("f_odef");
+    if(!aparelho) return toast("Informe o aparelho.","err");
+    if(!defeito) return toast("Descreva o defeito.","err");
+    DB.seq.os=(DB.seq.os||0)+1;
+    DB.ordens.push({id:uid(),numero:DB.seq.os,clienteId:val("f_ocli"),aparelho,imei:val("f_oimei"),
+      defeito,servico:num(val("f_oserv")),senha:val("f_osenha"),pecas:[],status:"em_analise",abertaEm:today(),criadoEm:new Date().toISOString()});
+    save(); closeModal(); toast("Ordem aberta ✓"); go("ordens");
+  };
+}
+
+/* --- Detalhe da OS --- */
+function detalheOrdem(id){
+  const o=byId(DB.ordens,id); if(!o) return; const c=byId(DB.clientes,o.clienteId);
+  const st=STATUS[o.status]||{label:o.status,cor:"gray"};
+  const stepBtns=Object.keys(STATUS).map(k=>`<option value="${k}" ${o.status===k?'selected':''}>${STATUS[k].label}</option>`).join('');
+  const pecas=(o.pecas||[]).map((p,i)=>`<div class="cart-item"><div style="flex:1"><b>${esc(p.nome)}</b></div><div class="money" style="color:var(--green)">${money(p.valor)}</div><button class="qty" data-delpeca="${i}" style="width:30px;height:30px;border-radius:9px;border:1px solid var(--border);background:var(--card3);color:var(--red)">✕</button></div>`).join('');
+  modal(`OS #${String(o.numero).padStart(4,'0')}`,`
+    <div style="margin-bottom:12px"><span class="badge ${st.cor}">${esc(st.label)}</span></div>
+    <div class="field"><label>Situação</label><select id="d_status">${stepBtns}</select></div>
+    <div class="card" style="background:var(--card);margin-bottom:12px">
+      <div class="m"><b>Cliente:</b> ${c?esc(c.nome):'—'}${c&&c.telefone?' · '+esc(c.telefone):''}</div>
+      <div class="m"><b>Aparelho:</b> ${esc(o.aparelho)}${o.imei?' · IMEI '+esc(o.imei):''}</div>
+      <div class="m"><b>Defeito:</b> ${esc(o.defeito)}</div>
+      ${o.senha?`<div class="m"><b>Senha:</b> ${esc(o.senha)}</div>`:''}
+      <div class="m"><b>Aberta em:</b> ${fmtDate(o.abertaEm)}${o.finalizadaEm?` · <b>Finalizada:</b> ${fmtDate(o.finalizadaEm)}`:''}</div>
+    </div>
+    <div class="field"><label>Valor do serviço (R$)</label><input id="d_serv" value="${o.servico||''}" inputmode="decimal"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0 8px"><b>Peças</b><button class="btn ghost sm" id="d_addpeca">${IC.plus} Adicionar peça</button></div>
+    <div id="d_pecas">${pecas||'<div class="m" style="color:var(--muted)">Nenhuma peça lançada.</div>'}</div>
+    <div style="display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b>Total</b><b class="money" style="color:var(--green);font-size:18px">${money(osTotal(o))}</b></div>
+    <div class="grid g2 sm1" style="margin-top:14px">
+      <button class="btn ghost" id="d_zap">Avisar cliente (WhatsApp)</button>
+      <button class="btn ghost" id="d_pdf">Gerar PDF / imprimir</button>
+    </div>
+    <button class="btn danger wide" id="d_del" style="margin-top:10px">Excluir ordem</button>
+  `,"Salvar alterações");
+  onSaveFn=()=>{
+    const novo=$("#d_status").value; o.status=novo; o.servico=num($("#d_serv").value);
+    if((novo==="concluida"||novo==="entregue")&&!o.finalizadaEm) o.finalizadaEm=today();
+    save(); closeModal(); toast("Ordem atualizada ✓"); go("ordens");
+  };
+  $("#d_serv").oninput=()=>{ o.servico=num($("#d_serv").value); };
+  $("#d_addpeca").onclick=()=>{
+    const nome=prompt("Nome da peça:"); if(!nome) return;
+    const v=prompt("Valor cobrado pela peça (R$):","0");
+    o.pecas=o.pecas||[]; o.pecas.push({nome:nome.trim(),valor:num(v)}); save(); detalheOrdem(id);
+  };
+  document.querySelectorAll('[data-delpeca]').forEach(b=>b.onclick=()=>{ o.pecas.splice(+b.dataset.delpeca,1); save(); detalheOrdem(id); });
+  $("#d_zap").onclick=()=>avisarWhatsapp(c,o);
+  $("#d_pdf").onclick=()=>imprimirOS(o,c);
+  $("#d_del").onclick=()=>{ if(confirm("Excluir esta ordem de serviço?")){ DB.ordens=DB.ordens.filter(x=>x.id!==id); save(); closeModal(); toast("Ordem excluída"); go("ordens"); } };
+}
+
+function avisarWhatsapp(c,o){
+  if(!c||!c.telefone) return toast("Cliente sem telefone cadastrado.","err");
+  const st=STATUS[o.status]?STATUS[o.status].label:o.status;
+  const msg=`Olá, ${c.nome}! Aqui é da ${DB.config.loja||'Soberano Assistência Técnica'}.\n`+
+    `Sua OS #${String(o.numero).padStart(4,'0')} (${o.aparelho}) está: *${st}*.\n`+
+    (osFaturavel(o)?`Valor: ${money(osTotal(o))}.\n`:'')+`Qualquer dúvida, estamos à disposição!`;
+  window.open(`https://wa.me/55${digits(c.telefone)}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+function imprimirOS(o,c){
+  const area=document.createElement('div'); area.id="printArea"; area.style.padding="24px"; area.style.color="#000";
+  area.innerHTML=`
+    <h2 style="margin:0">Soberano — Assistência Técnica</h2>
+    <p style="margin:2px 0 14px;color:#555">Ordem de Serviço #${String(o.numero).padStart(4,'0')}</p>
+    <p><b>Cliente:</b> ${esc(c?c.nome:'—')} ${c&&c.telefone?'· '+esc(c.telefone):''}</p>
+    <p><b>Aparelho:</b> ${esc(o.aparelho)} ${o.imei?'· IMEI '+esc(o.imei):''}</p>
+    <p><b>Defeito:</b> ${esc(o.defeito)}</p>
+    <p><b>Situação:</b> ${esc(STATUS[o.status]?STATUS[o.status].label:o.status)}</p>
+    <p><b>Aberta em:</b> ${fmtDate(o.abertaEm)}</p>
+    <table style="width:100%;border-collapse:collapse;margin-top:12px">
+      <tr><td style="border-bottom:1px solid #ccc;padding:6px 0"><b>Serviço</b></td><td style="border-bottom:1px solid #ccc;padding:6px 0;text-align:right">${money(o.servico)}</td></tr>
+      ${(o.pecas||[]).map(p=>`<tr><td style="border-bottom:1px solid #eee;padding:6px 0">${esc(p.nome)}</td><td style="border-bottom:1px solid #eee;padding:6px 0;text-align:right">${money(p.valor)}</td></tr>`).join('')}
+      <tr><td style="padding:8px 0"><b>TOTAL</b></td><td style="padding:8px 0;text-align:right"><b>${money(osTotal(o))}</b></td></tr>
+    </table>
+    <p style="margin-top:30px;color:#555">Assinatura do cliente: ____________________________</p>`;
+  document.querySelector('.main').appendChild(area);
+  window.print();
+  setTimeout(()=>area.remove(),500);
+}
+
+/* --- Venda / carrinho --- */
+let carrinho=[];
+function formVenda(){
+  carrinho=[];
+  renderVendaModal();
+}
+function renderVendaModal(){
+  const total=carrinho.reduce((s,i)=>s+i.preco*i.qtd,0);
+  const disp=DB.produtos.filter(p=>p.qtd>0);
+  const prodOpts=disp.map(p=>`<option value="${p.id}">${esc(p.nome)} — ${money(p.venda)} (${p.qtd} disp.)</option>`).join('');
+  const itensHTML=carrinho.length?carrinho.map((i,idx)=>`
+    <div class="cart-item"><div style="flex:1;min-width:0"><b>${esc(i.nome)}</b><div class="m">${money(i.preco)} cada</div></div>
+      <div class="qty"><button data-cq="-" data-i="${idx}">−</button><b>${i.qtd}</b><button data-cq="+" data-i="${idx}">+</button></div>
+      <div class="money" style="color:var(--green);min-width:70px;text-align:right">${money(i.preco*i.qtd)}</div></div>`).join(''):'<div class="m" style="color:var(--muted);padding:8px 0">Carrinho vazio. Adicione produtos abaixo.</div>';
+  modal("Nova venda",`
+    <div class="field"><label>Adicionar produto</label>
+      <div style="display:flex;gap:8px"><select id="v_prod"><option value="">— escolher —</option>${prodOpts}</select><button class="btn primary sm" id="v_add">${IC.plus}</button></div>
+    </div>
+    <div id="v_itens">${itensHTML}</div>
+    <div style="display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><b>Total</b><b class="money" style="color:var(--green);font-size:20px">${money(total)}</b></div>
+    <div class="field" style="margin-top:14px"><label>Forma de pagamento</label><select id="v_forma">${PAGAMENTOS.map(p=>`<option>${p}</option>`).join('')}</select></div>
+  `,"Finalizar venda");
+  $("#v_add").onclick=()=>{
+    const pid=$("#v_prod").value; if(!pid) return;
+    const p=byId(DB.produtos,pid); const exist=carrinho.find(i=>i.produtoId===pid);
+    const emCarrinho=exist?exist.qtd:0;
+    if(emCarrinho+1>p.qtd) return toast("Sem estoque suficiente.","err");
+    if(exist) exist.qtd++; else carrinho.push({produtoId:pid,nome:p.nome,preco:p.venda,custo:p.custo,qtd:1});
+    renderVendaModal();
+  };
+  document.querySelectorAll('[data-cq]').forEach(b=>b.onclick=()=>{
+    const i=carrinho[+b.dataset.i]; const p=byId(DB.produtos,i.produtoId);
+    if(b.dataset.cq==="+"){ if(i.qtd+1>p.qtd) return toast("Sem estoque.","err"); i.qtd++; }
+    else { i.qtd--; if(i.qtd<=0) carrinho=carrinho.filter(x=>x!==i); }
+    renderVendaModal();
+  });
+  onSaveFn=()=>{
+    if(!carrinho.length) return toast("Carrinho vazio.","err");
+    const total=carrinho.reduce((s,i)=>s+i.preco*i.qtd,0);
+    const lucro=carrinho.reduce((s,i)=>s+(i.preco-(i.custo||0))*i.qtd,0);
+    carrinho.forEach(i=>{ const p=byId(DB.produtos,i.produtoId); if(p) p.qtd=Math.max(0,p.qtd-i.qtd); });
+    DB.seq.venda=(DB.seq.venda||0)+1;
+    DB.vendas.push({id:uid(),numero:DB.seq.venda,itens:carrinho.map(i=>({produtoId:i.produtoId,nome:i.nome,preco:i.preco,qtd:i.qtd})),
+      total,lucro,forma:$("#v_forma").value,data:today(),criadoEm:new Date().toISOString()});
+    save(); closeModal(); toast("Venda registrada ✓"); go("vendas");
+  };
+}
+
+/* --- Movimentação de caixa --- */
+function formMov(tipo,m){
+  m=m||{};
+  modal(m.id?"Editar movimentação":(tipo==="entrada"?"Nova entrada":"Nova despesa"),`
+    <div class="field"><label>Descrição *</label><input id="m_desc" value="${esc(m.descricao||'')}" placeholder="${tipo==='entrada'?'Ex.: recebimento avulso':'Ex.: aluguel, conta de luz'}"></div>
+    <div class="row2">
+      <div class="field"><label>Valor (R$) *</label><input id="m_val" value="${m.valor||''}" inputmode="decimal" placeholder="0,00"></div>
+      <div class="field"><label>Data</label><input id="m_data" type="date" value="${m.data||today()}"></div>
+    </div>
+    <div class="field"><label>Categoria</label><input id="m_cat" value="${esc(m.categoria||'')}" placeholder="opcional"></div>
+  `);
+  onSaveFn=()=>{
+    const descricao=val("m_desc"),valor=num(val("m_val"));
+    if(!descricao) return toast("Informe a descrição.","err");
+    if(!valor) return toast("Informe o valor.","err");
+    const data={tipo:m.tipo||tipo,descricao,valor,data:val("m_data")||today(),categoria:val("m_cat")};
+    if(m.id) Object.assign(byId(DB.caixa,m.id),data);
+    else DB.caixa.push({id:uid(),...data,criadoEm:new Date().toISOString()});
+    save(); closeModal(); toast("Movimentação salva ✓"); go("financeiro");
+  };
+}
+
+/* ============================================================
+   CONTA: ações
+   ============================================================ */
+function editarLoja(){
+  const c=DB.config;
+  modal("Dados da loja",`
+    <div class="field"><label>Nome da loja</label><input id="e_loja" value="${esc(c.loja||'')}"></div>
+    <div class="field"><label>Seu nome (responsável)</label><input id="e_dono" value="${esc(c.dono||'')}"></div>`);
+  onSaveFn=()=>{ c.loja=val("e_loja")||"Soberano"; c.dono=val("e_dono"); save(); closeModal(); toast("Dados salvos ✓"); go("conta"); };
+}
+function alterarSenha(){
+  modal("Alterar senha",`
+    <div class="field"><label>Senha atual</label><input id="s_atual" type="password"></div>
+    <div class="field"><label>Nova senha (mín. 6)</label><input id="s_nova" type="password"></div>
+    <div class="field"><label>Repita a nova senha</label><input id="s_rep" type="password"></div>`);
+  onSaveFn=async ()=>{
+    const atual=val("s_atual"), nova=val("s_nova");
+    if(nova.length<6) return toast("Use ao menos 6 caracteres.","err");
+    if(nova!==val("s_rep")) return toast("As senhas não conferem.","err");
+    const email=(await supa.auth.getUser()).data.user?.email;
+    const r1=await supa.auth.signInWithPassword({ email, password:atual });
+    if(r1.error) return toast("Senha atual incorreta.","err");
+    const r2=await supa.auth.updateUser({ password:nova });
+    if(r2.error) return toast("Não deu pra alterar a senha.","err");
+    closeModal(); toast("Senha alterada ✓");
+  };
+}
+function sairApp(){
+  supa.auth.signOut().finally(()=>{ if(canal){ supa.removeChannel(canal); canal=null; } telaLogin(); });
+}
+function exportarBackup(){
+  const blob=new Blob([JSON.stringify(DB)],{type:"application/json"});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`soberano-backup-${today()}.json`; a.click(); toast("Backup gerado ✓");
+}
+function importarBackup(){
+  const inp=document.createElement('input'); inp.type="file"; inp.accept="application/json";
+  inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const r=new FileReader();
+    r.onload=()=>{ try{ const d=JSON.parse(r.result); if(!d.config) throw 0;
+      if(confirm("Isto vai substituir os dados atuais pelo backup. Continuar?")){ DB=Object.assign(structuredClone(DB_DEFAULT),d); save(); toast("Backup importado ✓"); go("painel"); } }
+      catch(e){ toast("Arquivo inválido.","err"); } };
+    r.readAsText(f); };
+  inp.click();
+}
+function carregarExemplo(){
+  if(!confirm("Carregar alguns clientes, ordens e produtos de exemplo para testar?")) return;
+  const c1=uid(),c2=uid();
+  DB.clientes.push({id:c1,nome:"Maria Souza",telefone:"(11) 98888-1122",cpf:"123.456.789-00",cidade:"São Paulo",estado:"SP",criadoEm:today()});
+  DB.clientes.push({id:c2,nome:"Carlos Lima",telefone:"(11) 97777-3344",cpf:"",cidade:"Guarulhos",estado:"SP",criadoEm:today()});
+  DB.seq.os=2;
+  DB.ordens.push({id:uid(),numero:1,clienteId:c1,aparelho:"Samsung A15",imei:"356789012345678",defeito:"Tela quebrada",servico:120,pecas:[{nome:"Tela A15",valor:180}],status:"em_manutencao",abertaEm:today(),criadoEm:new Date().toISOString()});
+  DB.ordens.push({id:uid(),numero:2,clienteId:c2,aparelho:"iPhone 11",imei:"",defeito:"Não carrega",servico:80,pecas:[],status:"aguardando_pecas",abertaEm:today(),criadoEm:new Date().toISOString()});
+  DB.produtos.push({id:uid(),nome:"Película 3D",categoria:"Acessório",fornecedor:"Distribuidora X",custo:4,venda:20,qtd:15,minimo:5,criadoEm:today()});
+  DB.produtos.push({id:uid(),nome:"Cabo USB-C",categoria:"Acessório",fornecedor:"Distribuidora X",custo:7,venda:25,qtd:2,minimo:3,criadoEm:today()});
+  DB.produtos.push({id:uid(),nome:"Bateria A15",categoria:"Peça",fornecedor:"Fornecedor Y",custo:40,venda:110,qtd:4,minimo:2,criadoEm:today()});
+  save(); toast("Dados de exemplo carregados ✓"); go("painel");
+}
+function zerarDados(){
+  if(!confirm("APAGAR TODOS os dados (clientes, ordens, estoque, vendas)? Isso não tem volta.")) return;
+  if(!confirm("Tem certeza mesmo? Faça um backup antes se precisar.")) return;
+  const cfg=DB.config; DB=structuredClone(DB_DEFAULT); DB.config=cfg; save(); toast("Dados apagados."); go("painel");
+}
+
+/* ============================================================
+   EVENTOS
+   ============================================================ */
+function bind(){
+  // navegação (topbar + nav)
+  document.querySelectorAll('[data-route]').forEach(a=>a.onclick=e=>{ e.preventDefault(); const r=a.dataset.route;
+    if(a.dataset.new) { go(r); setTimeout(()=>formCliente(),50); } else go(r); });
+  const bi=$("#btnInstall"); if(bi) bi.onclick=instalar;
+  bindView();
+}
+function bindView(){
+  const root=$("#view"); if(!root) return;
+  // ações globais
+  root.querySelectorAll('[data-act]').forEach(el=>el.onclick=()=>{
+    const a=el.dataset.act;
+    if(a==="nova-ordem") formOrdem();
+    else if(a==="novo-cliente") formCliente();
+    else if(a==="novo-aparelho") formAparelho();
+    else if(a==="novo-produto") formProduto();
+    else if(a==="nova-venda") formVenda();
+    else if(a==="mov") formMov(el.dataset.tipo);
+    else if(a==="editar-loja") editarLoja();
+    else if(a==="alterar-senha") alterarSenha();
+    else if(a==="sincronizar") carregarNuvem().then(ok=>{ toast(ok?'Atualizado ✓':'Sem internet agora.',ok?'ok':'err'); if(ok) go(current); });
+    else if(a==="backup") exportarBackup();
+    else if(a==="exemplo") carregarExemplo();
+    else if(a==="zerar") zerarDados();
+    else if(a==="sair") sairApp();
+  });
+  // navegação por data-route dentro das telas
+  root.querySelectorAll('[data-route]').forEach(a=>a.onclick=e=>{ e.preventDefault(); const r=a.dataset.route;
+    if(a.dataset.new){ go(r); setTimeout(()=>formCliente(),50); } else go(r); });
+  // abrir detalhes
+  root.querySelectorAll('[data-open-os]').forEach(el=>el.onclick=()=>detalheOrdem(el.dataset.openOs));
+  root.querySelectorAll('[data-open-cliente]').forEach(el=>el.onclick=()=>{ const c=byId(DB.clientes,el.dataset.openCliente); formCliente(c); });
+  root.querySelectorAll('[data-open-aparelho]').forEach(el=>el.onclick=()=>{ const a=byId(DB.aparelhos,el.dataset.openAparelho); formAparelho(a); });
+  root.querySelectorAll('[data-open-produto]').forEach(el=>el.onclick=()=>{ const p=byId(DB.produtos,el.dataset.openProduto); formProduto(p); });
+  root.querySelectorAll('[data-open-mov]').forEach(el=>el.onclick=()=>{ const m=byId(DB.caixa,el.dataset.openMov); formMov(m.tipo,m); });
+  root.querySelectorAll('[data-zap]').forEach(el=>el.onclick=(e)=>{ e.stopPropagation(); const c=byId(DB.clientes,el.dataset.zap);
+     if(c&&c.telefone) window.open(`https://wa.me/55${digits(c.telefone)}`,'_blank'); else toast("Sem telefone.","err"); });
+  // filtros / busca
+  const h=(id,fn)=>{ const e=document.getElementById(id); if(e){ e.oninput=()=>{ fn(e.value); }; } };
+  h("buscaOrdem",v=>{ordensBusca=v;refreshList(vOrdens);});
+  h("buscaCliente",v=>{clientesBusca=v;refreshList(vClientes);});
+  h("buscaAparelho",v=>{aparelhosBusca=v;refreshList(vAparelhos);});
+  h("buscaEstoque",v=>{estoqueBusca=v;refreshList(vEstoque);});
+  h("buscaVenda",v=>{vendasBusca=v;refreshList(vVendas);});
+  root.querySelectorAll('[data-of]').forEach(b=>b.onclick=()=>{ordensFiltro=b.dataset.of;go("ordens");});
+  root.querySelectorAll('[data-ef]').forEach(b=>b.onclick=()=>{estoqueFiltro=b.dataset.ef;go("estoque");});
+  root.querySelectorAll('[data-per]').forEach(b=>b.onclick=()=>{painelPeriodo=b.dataset.per;go("painel");});
+  root.querySelectorAll('[data-fp]').forEach(b=>b.onclick=()=>{finPeriodo=b.dataset.fp;go("financeiro");});
+}
+// atualiza só a lista sem perder foco do campo de busca
+function refreshList(viewFn){
+  const root=$("#view"); const focId=document.activeElement&&document.activeElement.id; const pos=document.activeElement&&document.activeElement.selectionStart;
+  root.innerHTML=viewFn(); bindView();
+  if(focId){ const e=document.getElementById(focId); if(e){ e.focus(); try{e.setSelectionRange(pos,pos);}catch(_){} } }
+}
+
+/* ============================================================
+   SETUP (primeiro acesso) + LOGIN
+   ============================================================ */
+function telaLogin(){
+  document.getElementById('root').innerHTML=`<div class="auth-wrap"><div class="auth-card">
+    <div class="auth-logo"><img src="icon-192.png" alt="Soberano"><b>SOBERANO</b><span>Assistência Técnica</span></div>
+    <p style="text-align:center;color:var(--muted);font-size:14px;margin:0 0 18px">Acessar o sistema</p>
+    <div class="field"><label>E-mail</label><input id="lg_email" type="email" value="soberanoassistenciatecnica@gmail.com" autocomplete="username"></div>
+    <div class="field"><label>Senha</label><input id="lg_senha" type="password" placeholder="sua senha" autocomplete="current-password"></div>
+    <button class="btn primary wide" id="lg_ok">Entrar</button>
+    <button class="btn ghost wide" id="lg_novo" style="margin-top:10px">Primeiro acesso — criar senha</button>
+  </div></div>`;
+  const entrar=async ()=>{
+    const email=val("lg_email"), senha=val("lg_senha");
+    if(!email||!senha) return toast("Preencha e-mail e senha.","err");
+    const btn=$("#lg_ok"); btn.disabled=true; btn.textContent="Entrando...";
+    const { error }=await supa.auth.signInWithPassword({ email, password:senha });
+    btn.disabled=false; btn.textContent="Entrar";
+    if(error) return toast("E-mail ou senha incorretos.","err");
+    await entrarApp();
+  };
+  const criar=async ()=>{
+    const email=val("lg_email"), senha=val("lg_senha");
+    if(!email) return toast("Informe o e-mail.","err");
+    if(senha.length<6) return toast("Crie uma senha de pelo menos 6 caracteres.","err");
+    const { data, error }=await supa.auth.signUp({ email, password:senha });
+    if(error) return toast(error.message||"Não deu pra criar o acesso.","err");
+    if(data.session){ toast("Acesso criado ✓"); await entrarApp(); }
+    else toast("Conta criada — confirme pelo e-mail para entrar.","err");
+  };
+  $("#lg_ok").onclick=entrar;
+  $("#lg_novo").onclick=criar;
+  $("#lg_senha").addEventListener('keydown',e=>{ if(e.key==="Enter") entrar(); });
+}
+
+async function entrarApp(){
+  await carregarNuvem();
+  render();
+  assinarTempoReal();
+}
+
+async function boot(){
+  try{
+    const { data:{ session } }=await supa.auth.getSession();
+    if(session){ await entrarApp(); } else { telaLogin(); }
+  }catch(e){ telaLogin(); }
+  // ao voltar a internet, reenvia o que estiver em memória
+  window.addEventListener('online', ()=>{ supa.auth.getSession().then(({data})=>{ if(data.session) save(); }); });
+}
+
+/* ============================================================
+   PWA install
+   ============================================================ */
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredInstall=e; const b=$("#btnInstall"); if(b) b.style.display="inline-flex"; });
+window.addEventListener('appinstalled',()=>{ deferredInstall=null; const b=$("#btnInstall"); if(b) b.style.display="none"; toast("Aplicativo instalado ✓"); });
+function instalar(){
+  if(deferredInstall){ deferredInstall.prompt(); deferredInstall=null; return; }
+  const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  modal("Instalar o Soberano", iOS
+    ? `<p>No iPhone/iPad, instale assim:</p><ol style="line-height:1.9;color:var(--muted)"><li>Toque no botão <b>Compartilhar</b> (quadrado com seta pra cima).</li><li>Deslize e toque em <b>"Adicionar à Tela de Início"</b>.</li><li>Toque em <b>Adicionar</b>.</li></ol>`
+    : `<p>Para instalar:</p><ol style="line-height:1.9;color:var(--muted)"><li>Abra o menu do navegador (⋮).</li><li>Toque em <b>"Instalar app"</b> ou <b>"Adicionar à tela inicial"</b>.</li></ol>`,
+    "Entendi");
+  onSaveFn=closeModal;
+}
+
+/* ---------- start ---------- */
+// Service worker só quando publicado na web (http/https). No pendrive (file://) ele não roda — e não precisa.
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+boot();
+</script>
+</body>
+</html>
