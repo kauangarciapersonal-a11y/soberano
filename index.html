@@ -670,12 +670,14 @@ function vConta(){
     <b style="font-size:15px">Nuvem e backup</b>
     <div class="m" style="color:var(--muted);font-size:13px;margin:6px 0 12px">
       ${DB.clientes.length} clientes · ${DB.ordens.length} ordens · ${DB.produtos.length} produtos · ${DB.vendas.length} vendas.<br>
-      <b style="color:var(--green)">Salvando na nuvem ✓</b> — os dados aparecem no PC e no celular.
+      <b style="color:var(--green)">Salvando na nuvem ✓</b> — os dados aparecem no PC e no celular.<br>
+      <span style="color:var(--green2)">🛡️ Backup automático diário ativo.</span>
     </div>
     <div class="grid g2 sm1">
       <button class="btn ghost" data-act="sincronizar">🔄 Atualizar agora</button>
       <button class="btn ghost" data-act="backup">⬇ Baixar backup</button>
     </div>
+    <button class="btn ghost wide" data-act="restaurar" style="margin-top:10px">⏱️ Restaurar backup (voltar no tempo)</button>
     <button class="btn ghost wide" data-act="exemplo" style="margin-top:10px">Carregar dados de exemplo</button>
     <button class="btn danger wide" data-act="zerar" style="margin-top:10px">Apagar todos os dados</button>
   </div>
@@ -1033,6 +1035,7 @@ function bindView(){
     else if(a==="editar-loja") editarLoja();
     else if(a==="alterar-senha") alterarSenha();
     else if(a==="sincronizar") carregarNuvem().then(ok=>{ toast(ok?'Atualizado ✓':'Sem internet agora.',ok?'ok':'err'); if(ok) go(current); });
+    else if(a==="restaurar") restaurarBackup();
     else if(a==="backup") exportarBackup();
     else if(a==="exemplo") carregarExemplo();
     else if(a==="zerar") zerarDados();
@@ -1107,6 +1110,55 @@ async function entrarApp(){
   await carregarNuvem();
   render();
   assinarTempoReal();
+  backupDiario();   // garante a cópia de segurança do dia
+}
+
+/* ============================================================
+   BACKUP AUTOMÁTICO (cópias de segurança diárias na nuvem)
+   ============================================================ */
+// Cria 1 cópia por dia (se ainda não existir a de hoje). Usa a própria tabela.
+async function backupDiario(){
+  if(temPendente()) return;        // se há coisa não sincronizada, não faz backup ainda
+  try{
+    const id = 'backup-' + today();
+    const { data } = await supa.from('app_estado').select('id').eq('id', id);
+    if(data && data.length) return; // já tem backup de hoje
+    await supa.from('app_estado').insert({ id, dados: DB, atualizado_em: new Date().toISOString() });
+  }catch(e){ /* sem internet: tenta na próxima abertura */ }
+}
+
+// Lista os backups e deixa restaurar
+async function restaurarBackup(){
+  let lista = [];
+  try{
+    const { data, error } = await supa.from('app_estado').select('id').like('id','backup-%').order('id',{ascending:false});
+    if(error) throw error; lista = data || [];
+  }catch(e){ return toast('Sem internet para buscar os backups.','err'); }
+  if(!lista.length) return toast('Ainda não há backups — eles começam a partir de hoje.','err');
+  const html = lista.slice(0,30).map(b=>{
+    const dia = b.id.replace('backup-','');
+    return `<button class="btn ghost wide" data-restore="${esc(b.id)}" style="margin-bottom:8px">📅 ${fmtDate(dia)}</button>`;
+  }).join('');
+  modal("Restaurar backup",
+    '<div class="m" style="color:var(--muted);margin-bottom:12px">Escolha um dia. Os dados da loja voltam a como estavam naquele dia. As cópias dos outros dias continuam guardadas.</div>'+html,
+    "Fechar");
+  onSaveFn = closeModal;
+  document.querySelectorAll('[data-restore]').forEach(bt=>bt.onclick=()=>fazerRestore(bt.dataset.restore));
+}
+
+async function fazerRestore(id){
+  const dia = fmtDate(id.replace('backup-',''));
+  if(!confirm('Restaurar os dados para o dia '+dia+'?\n\nOs dados atuais serão substituídos por essa cópia. (As cópias de segurança continuam guardadas, dá pra voltar.)')) return;
+  try{
+    // antes de restaurar, garante um backup do estado atual (pra poder desfazer)
+    await backupDiario();
+    const { data, error } = await supa.from('app_estado').select('dados').eq('id', id).single();
+    if(error) throw error;
+    DB = Object.assign(structuredClone(DB_DEFAULT), data.dados || {});
+    if(!DB.config) DB.config = {loja:"Soberano Assistência Técnica",dono:""};
+    await save();
+    closeModal(); toast('Dados restaurados ✓'); go('painel');
+  }catch(e){ toast('Não deu pra restaurar (sem internet?).','err'); }
 }
 
 async function boot(){
@@ -1137,7 +1189,7 @@ function instalar(){
 /* ============================================================
    AUTO-ATUALIZAÇÃO (verifica se saiu versão nova e atualiza)
    ============================================================ */
-const APP_VERSION = "2026-11-25a";
+const APP_VERSION = "2026-11-25b";
 let avisoVersaoMostrado = false;
 async function checarVersao(){
   try{
