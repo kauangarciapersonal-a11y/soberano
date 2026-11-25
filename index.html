@@ -203,9 +203,18 @@ let canal = null;         // canal de sincronização em tempo real
 function cacheLoad(){ try{ return Object.assign(structuredClone(DB_DEFAULT), JSON.parse(localStorage.getItem(CACHE)||"{}")); }catch(e){ return structuredClone(DB_DEFAULT); } }
 function cacheSave(){ try{ localStorage.setItem(CACHE, JSON.stringify(DB)); }catch(e){} }
 function load(){ return DB; } // compatibilidade
+// Há mudanças feitas no aparelho que ainda NÃO foram enviadas para a nuvem?
+function temPendente(){ return localStorage.getItem('soberano_pendente') === '1'; }
 
-// Traz os dados da nuvem para a memória
+// Traz os dados da nuvem para a memória — MAS nunca apaga mudanças locais ainda não enviadas
 async function carregarNuvem(){
+  if(temPendente()){
+    // Tem coisa digitada offline esperando subir: mantém o que está no aparelho e tenta enviar.
+    DB = cacheLoad();
+    if(!DB.config) DB.config = {loja:"Soberano Assistência Técnica",dono:""};
+    save();            // empurra o pendente pra nuvem
+    return true;
+  }
   try{
     const { data, error } = await supa.from('app_estado').select('dados').eq('id','loja').single();
     if(error) throw error;
@@ -218,11 +227,21 @@ async function carregarNuvem(){
 // Salva na nuvem (e guarda cópia local). Chamado após cada mudança.
 async function save(){
   cacheSave();
+  localStorage.setItem('soberano_pendente','1');   // marca como "ainda não confirmado na nuvem"
   const stamp = new Date().toISOString(); ultimoStamp = stamp;
   try{
     const { error } = await supa.from('app_estado').upsert({ id:'loja', dados:DB, atualizado_em:stamp });
     if(error) throw error;
-  }catch(e){ toast('Sem internet — salvo no aparelho, sincroniza depois.','err'); }
+    localStorage.removeItem('soberano_pendente');   // confirmou na nuvem
+  }catch(e){ toast('Sem internet — salvo no aparelho, envia sozinho quando a conexão voltar.','err'); }
+}
+
+// Tenta reenviar o que ficou pendente (quando a internet voltar)
+async function tentarSincronizar(){
+  if(temPendente() && navigator.onLine){
+    const { data } = await supa.auth.getSession();
+    if(data.session) await save();
+  }
 }
 
 // Sincronização em tempo real: se outro aparelho alterar, atualiza aqui
@@ -232,6 +251,7 @@ function assinarTempoReal(){
     .on('postgres_changes', { event:'UPDATE', schema:'public', table:'app_estado', filter:'id=eq.loja' }, (payload)=>{
       const novo = payload.new || {};
       if(novo.atualizado_em && novo.atualizado_em === ultimoStamp) return; // foi este aparelho
+      if(temPendente()) return;                                            // há mudanças locais não enviadas: não sobrescreve
       if(document.getElementById('modalRoot').innerHTML) return;           // não atrapalha quem está editando
       DB = Object.assign(structuredClone(DB_DEFAULT), novo.dados || {});
       if(!DB.config) DB.config = {loja:"Soberano Assistência Técnica",dono:""};
@@ -1095,7 +1115,8 @@ async function boot(){
     if(session){ await entrarApp(); } else { telaLogin(); }
   }catch(e){ telaLogin(); }
   // ao voltar a internet, reenvia o que estiver em memória
-  window.addEventListener('online', ()=>{ supa.auth.getSession().then(({data})=>{ if(data.session) save(); }); });
+  window.addEventListener('online', tentarSincronizar);        // internet voltou -> reenvia pendente
+  setInterval(tentarSincronizar, 20000);                        // a cada 20s, tenta subir o que ficou pendente
 }
 
 /* ============================================================
@@ -1116,7 +1137,7 @@ function instalar(){
 /* ============================================================
    AUTO-ATUALIZAÇÃO (verifica se saiu versão nova e atualiza)
    ============================================================ */
-const APP_VERSION = "2026-11-23b";
+const APP_VERSION = "2026-11-25a";
 let avisoVersaoMostrado = false;
 async function checarVersao(){
   try{
